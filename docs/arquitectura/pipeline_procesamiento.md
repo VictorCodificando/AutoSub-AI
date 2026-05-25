@@ -12,30 +12,30 @@ Esto evita la alternancia constante de modelos pesados en la GPU (por ejemplo, d
 
 ```mermaid
 graph TD
-    A[Video de Entrada] --> B[Fase 1: Ingesta & Segmentación]
-    B --> C[Fase 2: Aislamiento Vocal]
-    C --> D[Fase 3: Transcripción & Diarización]
-    D --> E[Fase 4: Contexto & Traducción]
-    E --> F[Fase 5: Interfaz de Revisión]
-    F --> G[Video Final con Soft Subs]
+    A["Video de Entrada"] --> B["Fase 1: Ingesta & Segmentación"]
+    B --> C["Fase 2: Aislamiento Vocal"]
+    C --> D["Fase 3: Transcripción & Diarización"]
+    D --> E["Fase 4: Contexto & Traducción"]
+    E --> F["Fase 5: Interfaz de Revisión"]
+    F --> G["Video Final con Soft Subs"]
 
-    subgraph "Fase 1: Ingesta"
-        B1[FFmpeg: Extracción de Audio] --> B2[Silero VAD v4: Detección de Voz]
+    subgraph "Detalle Fase 1: Ingesta"
+        B1["FFmpeg: Extracción de Audio"] --> B2["Silero VAD v4: Detección de Voz"]
     end
 
-    subgraph "Fase 2: Aislamiento"
-        C1[BS Roformer: Voz limpia vs. Ruido/Música]
+    subgraph "Detalle Fase 2: Aislamiento"
+        C1["BS Roformer: Voz limpia vs. Ruido/Música"]
     end
 
-    subgraph "Fase 3: Transcripción & Diarización"
-        D1[Whisper large-v3: Transcripción de chunks]
-        D2[Pyannote.audio 3.1: Identificación de Locutores]
-        D3[Reagrupación Semántica: Frases Coherentes]
+    subgraph "Detalle Fase 3: Transcripción & Diarización"
+        D1["Whisper large-v3: Transcripción de chunks"]
+        D2["Pyannote.audio 3.1: Identificación de Locutores"]
+        D3["Reagrupación Semántica: Frases Coherentes"]
     end
 
-    subgraph "Fase 4: Traducción"
-        E1[Generación de Glosario] --> E2[Ventana Deslizable de Contexto]
-        E2 --> E3[API Cerebras: Traducción LLM JSON]
+    subgraph "Detalle Fase 4: Traducción"
+        E1["Generación de Glosario"] --> E2["Ventana Deslizable de Contexto"]
+        E2 --> E3["API Cerebras: Traducción LLM JSON"]
     end
 ```
 
