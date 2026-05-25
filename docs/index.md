@@ -1,4 +1,4 @@
-# AutoSub-AI 🎙️
+# AutoSub-AI
 
 Bienvenido a la documentación oficial de **AutoSub-AI**, un pipeline automatizado avanzado para la transcripción, traducción y embebido de subtítulos en videos.
 
@@ -14,4 +14,3 @@ AutoSub-AI es un proyecto diseñado para procesar uno o varios videos y generar 
 - 🚀 **[Roadmap y Versiones](desarrollo/roadmap.md):** Evolución desde el MVP hasta perfiles de bajo consumo (Low/Medium VRAM).
 
 ---
-*Explora el menú superior y lateral para navegar por toda la documentación técnica.*
