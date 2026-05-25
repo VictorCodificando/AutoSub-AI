@@ -11,29 +11,29 @@ A diferencia de un procesamiento secuencial por archivo (donde un solo video pas
 Esto evita la alternancia constante de modelos pesados en la GPU (por ejemplo, descargar BS Roformer para cargar Whisper, y luego volver a cargar BS Roformer para el siguiente video), reduciendo drásticamente los tiempos muertos y el riesgo de errores por falta de memoria (Out of Memory - OOM).
 
 ```mermaid
-graph TD
-    A["Video de Entrada"] --> B["Fase 1: Ingesta & Segmentación"]
+flowchart TD
+    A["Video de Entrada"] --> B["Fase 1: Ingesta y Segmentación"]
     B --> C["Fase 2: Aislamiento Vocal"]
-    C --> D["Fase 3: Transcripción & Diarización"]
-    D --> E["Fase 4: Contexto & Traducción"]
+    C --> D["Fase 3: Transcripción y Diarización"]
+    D --> E["Fase 4: Contexto y Traducción"]
     E --> F["Fase 5: Interfaz de Revisión"]
     F --> G["Video Final con Soft Subs"]
 
-    subgraph "Detalle Fase 1: Ingesta"
+    subgraph SF1 ["Detalle Fase 1: Ingesta"]
         B1["FFmpeg: Extracción de Audio"] --> B2["Silero VAD v4: Detección de Voz"]
     end
 
-    subgraph "Detalle Fase 2: Aislamiento"
+    subgraph SF2 ["Detalle Fase 2: Aislamiento"]
         C1["BS Roformer: Voz limpia vs. Ruido/Música"]
     end
 
-    subgraph "Detalle Fase 3: Transcripción & Diarización"
+    subgraph SF3 ["Detalle Fase 3: Transcripción y Diarización"]
         D1["Whisper large-v3: Transcripción de chunks"]
         D2["Pyannote.audio 3.1: Identificación de Locutores"]
         D3["Reagrupación Semántica: Frases Coherentes"]
     end
 
-    subgraph "Detalle Fase 4: Traducción"
+    subgraph SF4 ["Detalle Fase 4: Traducción"]
         E1["Generación de Glosario"] --> E2["Ventana Deslizable de Contexto"]
         E2 --> E3["API Cerebras: Traducción LLM JSON"]
     end
