@@ -54,3 +54,10 @@ theme:
       - Integración de Modelos: arquitectura/integracion_modelos.md
     - Desarrollo:
       - Roadmap y Versiones: desarrollo/roadmap.md
+
+markdown_extensions:
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
