@@ -25,4 +25,4 @@ jobs:
           pip install mkdocs-material mkdocs-material
 
       - name: Desplegar a GitHub Pages
-        run: mkdocs gh-pages --force
+        run: mkdocs gh-deploy --force
