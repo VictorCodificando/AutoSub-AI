@@ -1,2 +1,3 @@
 # AutoSub-AI
-Subtitulos automaticos a partir de un archivo de video en cualquier idioma
+
+Pipeline automatizado para generar subtítulos a partir de archivos de video. Extrae el audio, detecta segmentos de voz, transcribe y exporta en formato SRT.

@@ -1,0 +1,16 @@
+# MkDocs - Ignorar la carpeta donde se compila el sitio web estático
+site/
+
+# Python - Ignorar entornos virtuales y archivos de caché
+venv/
+.venv/
+.env
+__pycache__/
+*.pyc
+
+# Modelos
+models/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
