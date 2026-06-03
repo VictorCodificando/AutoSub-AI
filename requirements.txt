@@ -1,2 +1,5 @@
 pydantic_settings
+torch 
+torchaudio
 faster-whisper
+audio-separator[gpu]

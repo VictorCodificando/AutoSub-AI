@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 
 
-def has_audio(video_path: Path):
+def has_audio(video_path: Path) -> bool:
     command = [
         "ffprobe",
         "-v",
@@ -26,6 +26,7 @@ def has_audio(video_path: Path):
         return False
     except subprocess.CalledProcessError as e:
         print(f"Error analizando el video {video_path.name}: {e.stderr}")
+        return False
 
 
 def extract_audio(video_path: Path, audio_path: Path):
