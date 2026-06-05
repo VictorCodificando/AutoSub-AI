@@ -1,13 +1,15 @@
-import shutil
 from pathlib import Path
 from .config import settings
 from .models import Job
 from .ingestion.extract import extract_audio
 from .utils.utils import create_path, delete_path
-from .isolation.isolate import isolate_voice
+from .isolation.isolate import Isolator
+from .transcription.transcriptor import Transcriptor
 
 
-def process_videos(videos: list[str]): # TODO No cumple con el bucle horizontal(Hay que cargar modelos e ir haciendo todo, luego pasar al siguiente)
+def process_videos(
+    videos: list[str],
+):
     jobs: list[Job] = [
         Job(id=index + 1, video_path=Path(video)) for index, video in enumerate(videos)
     ]
@@ -24,13 +26,21 @@ def process_videos(videos: list[str]): # TODO No cumple con el bucle horizontal(
     for job in jobs:
         pass
     # Aislamiento
-    for job in jobs:
-        job.clean_audio_path = isolate_voice(job.audio_path)
-        pass
+    with Isolator() as isolator:
+        for job in jobs:
+            job.clean_audio_path = isolator.isolate_voice(job.audio_path)
+            
     # Transcripcion
-    
+    with Transcriptor() as transcriptor:
+        for job in jobs:
+            job.transcription = transcriptor.transcribe(job.clean_audio_path)
+            print(job.transcription)
+
     # Diarizacion
+    for job in jobs:
+        pass
     # Traducción
+    
 
 
 if __name__ == "__main__":
