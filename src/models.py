@@ -10,7 +10,9 @@ import torch
 class TranscriptionSegment(BaseModel):
     id: int = Field(..., description="ID único del segmento, comenzando en 1", ge=1)
     time_start: str = Field(..., description="Tiempo de inicio (ej. '00:01:23,456')")
-    time_end: str = Field(..., description="Tiempo de finalización (ej. '00:01:23,456')")
+    time_end: str = Field(
+        ..., description="Tiempo de finalización (ej. '00:01:23,456')"
+    )
     transcription: str = Field(..., description="Texto limpio de la transcripción")
 
     @field_validator("transcription")
@@ -48,3 +50,14 @@ class Model(ABC):
             torch.cuda.empty_cache()
 
         return False
+
+
+class Translator(ABC):
+    def load(self):
+        pass
+
+    def translate(transcription: list[TranscriptionSegment]):
+        pass
+
+    def free(self):
+        pass

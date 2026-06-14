@@ -18,7 +18,17 @@ class Transcriptor(Model):
 
     def transcribe(self, audio_path: Path | None) -> list[TranscriptionSegment]:
         segments, _ = self.model.transcribe(
-            str(audio_path), beam_size=10, language=self.language
+            str(audio_path),
+            beam_size=10,
+            language=self.language,
+            vad_filter=True,
+            vad_parameters=dict(
+                threshold=0.45,
+                min_silence_duration_ms=500,
+                speech_pad_ms=300,
+                max_speech_duration_s=25,
+                min_speech_duration_ms=250,
+            ),
         )
 
         result: list[TranscriptionSegment] = []

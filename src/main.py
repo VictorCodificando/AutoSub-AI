@@ -25,6 +25,7 @@ def process_videos(
     # Segmentación
     for job in jobs:
         pass
+    
     # Aislamiento
     with Isolator() as isolator:
         for job in jobs:
@@ -40,6 +41,7 @@ def process_videos(
     for job in jobs:
         pass
     # Traducción
+    
     
 
 
