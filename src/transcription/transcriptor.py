@@ -31,22 +31,12 @@ class Transcriptor(Model):
             ),
         )
 
-        result: list[TranscriptionSegment] = []
-
-        for index, segment in enumerate(segments):
-            time_start: str = format_time(segment.start)
-            time_end: str = format_time(segment.end)
-
-            item: TranscriptionSegment = TranscriptionSegment(
-                id=index + 1,
-                time_start=time_start,
-                time_end=time_end,
-                transcription=segment.text,
+        return [
+            TranscriptionSegment(
+                id=index + 1, start=segment.start, end=segment.end, text=segment.text
             )
-
-            result.append(item)
-
-        return result
+            for index, segment in enumerate(segments)
+        ]
 
     def free(self):
         del self.model

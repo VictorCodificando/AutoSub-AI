@@ -9,16 +9,18 @@ import torch
 
 class TranscriptionSegment(BaseModel):
     id: int = Field(..., description="ID único del segmento, comenzando en 1", ge=1)
-    time_start: str = Field(..., description="Tiempo de inicio (ej. '00:01:23,456')")
-    time_end: str = Field(
-        ..., description="Tiempo de finalización (ej. '00:01:23,456')"
-    )
-    transcription: str = Field(..., description="Texto limpio de la transcripción")
+    start: float = Field(..., description="Tiempo de inicio en segundos", ge=0)
+    end: float = Field(..., description="Tiempo de finalización en segundos", ge=0)
+    text: str = Field(..., description="Texto limpio de la transcripción")
 
     @field_validator("transcription")
     @classmethod
     def strip_spaces(cls, v: str) -> str:
         return v.strip()
+
+    @property
+    def duration(self) -> float:
+        return self.end - self.start
 
 
 @dataclass
@@ -44,8 +46,8 @@ class Model(ABC):
         return self
 
     def __exit__(self, *_):
-        gc.collect()
         self.free()
+        gc.collect()
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
 

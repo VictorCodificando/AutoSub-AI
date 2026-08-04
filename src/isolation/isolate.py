@@ -7,10 +7,11 @@ class Isolator(Model):
     def __init__(
         self, model: str = "model_bs_roformer_ep_368_sdr_12.9628.ckpt"
     ) -> None:
-        self.separator = Separator()
+        self.separator: Separator | None = None
         self.model = model
 
     def load(self):
+        self.separator = Separator(model_file_dir="models")
         self.separator.load_model(self.model)
 
     def isolate_voice(self, audio_path: Path | None) -> Path:

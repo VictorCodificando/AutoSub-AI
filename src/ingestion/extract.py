@@ -41,9 +41,9 @@ def extract_audio(video_path: Path, audio_path: Path):
         "-c:a",
         "pcm_s16le",
         "-ac",
-        "1",
+        "2",
         "-ar",
-        "16000",
+        "44100",
         "-y",
         str(audio_path),  # Para que sea un .wav ha de terminar en .wav no tiene mas
     ]
