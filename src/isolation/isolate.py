@@ -1,6 +1,7 @@
 from pathlib import Path
 from audio_separator.separator import Separator
 from ..models import Model
+from ..config import settings
 
 
 class Isolator(Model):
@@ -16,6 +17,8 @@ class Isolator(Model):
 
     def isolate_voice(self, audio_path: Path | None) -> Path:
         self.separator.output_dir = str(audio_path.parent)
+        self.separator.model_instance.output_dir = str(audio_path.parent)
+        
         output_files = self.separator.separate(str(audio_path))
         vocal_file = None
         for file in output_files:

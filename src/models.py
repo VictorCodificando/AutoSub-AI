@@ -12,8 +12,9 @@ class TranscriptionSegment(BaseModel):
     start: float = Field(..., description="Tiempo de inicio en segundos", ge=0)
     end: float = Field(..., description="Tiempo de finalización en segundos", ge=0)
     text: str = Field(..., description="Texto limpio de la transcripción")
+    translated_text: str = Field(..., description="Texto limpio de la traduccion")
 
-    @field_validator("transcription")
+    @field_validator("transcription", check_fields=False)
     @classmethod
     def strip_spaces(cls, v: str) -> str:
         return v.strip()
