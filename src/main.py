@@ -5,13 +5,14 @@ from .ingestion.extract import extract_audio
 from .utils.utils import create_path
 from .isolation.isolate import Isolator
 from .export.exporter import export_to_srt
-from .transcription.transcriptor import Transcriptor, adjust_timestamps
+from .transcription.transcriptor import Transcriptor
 from .translation.translator import TranslatorFactory
 import time
 
 
 def process_videos(
     videos: list[str],
+    target_language: str = "Spanish",
 ):
 
     phase_times = {}
@@ -65,25 +66,29 @@ def process_videos(
     t_init_phase = time.perf_counter()
     print("Phase 4: Translation")
     # Translation
+    translator = TranslatorFactory.crear()
     for job in jobs:
-        translator = TranslatorFactory.crear()
-        idioma = "Spanish"
         translator.translate(
-            segments=job.transcription, target_language=idioma, context=""
+            segments=job.transcription, target_language=target_language, context=""
         )
     print("Translation finished")
     print("---------------")
     phase_times["Phase 4: Translation"] = time.perf_counter() - t_init_phase
     # Export
     print("Phase 5: Export")
+    t_init_phase = time.perf_counter()
     for job in jobs:
-        export_to_srt(job)
+        srt_path = export_to_srt(job, job.video_path.parent)
+        print(f"Subtitulos generados en {srt_path}")
 
     print("Export finished")
     print("---------------")
-
+    
+    phase_times["Phase 5: Export"] = time.perf_counter() - t_init_phase
+    
     finish_time = time.perf_counter()
     total_time = finish_time - start_time
+    phase_times["Total"] = total_time
     
     print("\n" + "=" * 60)
     print(f"{'TIME REPORT':^60}")
@@ -96,7 +101,7 @@ def process_videos(
 
 
 if __name__ == "__main__":
-    videos = ["./test_data/02_test.mkv"]
+    videos = ["./test_data/test_05.mp4"]
     create_path(settings.temp_path)
     process_videos(videos)
     # delete_path(settings.temp_path)

@@ -3,8 +3,7 @@ from abc import ABC, abstractmethod
 from pydantic import BaseModel
 import json
 
-from src.models import TranscriptionSegment
-
+from ..models import TranscriptionSegment
 from ..config import settings
 from google import genai
 
@@ -34,10 +33,8 @@ class GoogleAITranslator(TranslatorLLM):
     def translate(
         self, segments: list[TranscriptionSegment], target_language: str, context: str
     ):
-        payload = (
-            json.dumps(
-                [{"id": s.id, "text": s.text} for s in segments], ensure_ascii=False
-            ),
+        payload = json.dumps(
+            [{"id": s.id, "text": s.text} for s in segments], ensure_ascii=False
         )
         prompt = f"""Translate into {target_language} the following subtitles.
         Return with an object per received id. Do not fuse or ommit lines.
@@ -58,11 +55,39 @@ class GoogleAITranslator(TranslatorLLM):
                 "response_schema": TranslatedBatch,
             },
         )
-        parsed_lines: dict[int, str] = {l.id: l.text for l in response.parsed.lines}
-        for segment in segments:
-            segment.translated_text = parsed_lines[segment.id]
+        missing = apply_translation(segments, parse_response(response))
+        if missing:
+            print(
+                f"Warning: the model did not return {len(missing)} lines "
+                f"(ids {missing[:10]}...). Keeping original text."
+            )
 
         return None
+
+
+def parse_response(response) -> dict[int, str]:
+    # parsed is None when the output does not match the schema (truncated JSON, blocked)
+    batch: TranslatedBatch | None = getattr(response, "parsed", None)
+    if batch is None:
+        return {}
+
+    return {line.id: line.text.strip() for line in batch.lines if line.text.strip()}
+
+
+def apply_translation(
+    segments: list[TranscriptionSegment], translations: dict[int, str]
+) -> list[int]:
+    missing: list[int] = []
+    for segment in segments:
+        text = translations.get(segment.id)
+        if text:
+            segment.translated_text = text
+        else:
+            segment.translated_text = segment.text
+            segment.translation_failed = True
+            missing.append(segment.id)
+
+    return missing
 
 
 class TranslatorFactory:

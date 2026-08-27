@@ -1,4 +1,3 @@
-from typing import Any
 from dataclasses import dataclass
 from pathlib import Path
 from abc import ABC, abstractmethod
@@ -8,13 +7,16 @@ import torch
 
 
 class TranscriptionSegment(BaseModel):
-    id: int = Field(..., description="ID único del segmento, comenzando en 1", ge=1)
-    start: float = Field(..., description="Tiempo de inicio en segundos", ge=0)
-    end: float = Field(..., description="Tiempo de finalización en segundos", ge=0)
-    text: str = Field(..., description="Texto limpio de la transcripción")
-    translated_text: str = Field(..., description="Texto limpio de la traduccion")
+    id: int = Field(..., description="Unique numeric ID, starting in 1", ge=1)
+    start: float = Field(..., description="Start time in seconds", ge=0)
+    end: float = Field(..., description="End time in seconds", ge=0)
+    text: str = Field(..., description="Clean transcripted text")
+    translated_text: str = Field(default="", description="Clean translated text")
+    translation_failed: bool = Field(
+        default=False, description="Translation failed and the original text is saved"
+    )
 
-    @field_validator("transcription", check_fields=False)
+    @field_validator("text", "translated_text")
     @classmethod
     def strip_spaces(cls, v: str) -> str:
         return v.strip()
@@ -53,14 +55,3 @@ class Model(ABC):
             torch.cuda.empty_cache()
 
         return False
-
-
-class Translator(ABC):
-    def load(self):
-        pass
-
-    def translate(transcription: list[TranscriptionSegment]):
-        pass
-
-    def free(self):
-        pass

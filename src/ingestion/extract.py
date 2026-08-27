@@ -45,7 +45,7 @@ def extract_audio(video_path: Path, audio_path: Path):
         "-ar",
         "44100",
         "-y",
-        str(audio_path),  # Para que sea un .wav ha de terminar en .wav no tiene mas
+        str(audio_path),
     ]
     try:
         _ = subprocess.run(command, capture_output=True, text=True, check=True)

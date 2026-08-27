@@ -7,6 +7,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 class Settings(BaseSettings):
     temp_path: str
+    output_path: str = "output"
     llm_provider: str
     llm_model: str
     api_key: str
