@@ -4,3 +4,4 @@ torchaudio
 faster-whisper
 audio-separator[gpu]
 google-genai
+pysubs2

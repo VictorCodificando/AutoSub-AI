@@ -7,6 +7,10 @@ from .isolation.isolate import Isolator
 from .export.exporter import export_to_srt
 from .transcription.transcriptor import Transcriptor
 from .translation.translator import TranslatorFactory
+from .evaluation.cues import from_segments
+from .evaluation.display import format_details, format_table
+from .evaluation.report import evaluate
+from .evaluation.rules import thresholds_for
 import time
 
 
@@ -98,6 +102,25 @@ def process_videos(
     for phase_name, duration in phase_times.items():
         percent = (duration / total_time) * 100
         print(f"{phase_name:<35} | {duration:>8.3f} s | {percent:>8.2f} %")
+
+    reports = [
+        evaluate(
+            from_segments(job.transcription, translated=True),
+            name=job.video_path.name,
+            thresholds=thresholds_for(target_language),
+            failed_translations=sum(s.translation_failed for s in job.transcription),
+        )
+        for job in jobs
+        if job.transcription is not None
+    ]
+
+    print("\n" + "=" * 60)
+    print(f"{'QUALITY REPORT':^60}")
+    print("=" * 60)
+    print(format_table(reports))
+    for report in reports:
+        print()
+        print(format_details(report))
 
 
 if __name__ == "__main__":
