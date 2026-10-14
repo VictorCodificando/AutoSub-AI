@@ -1,7 +1,10 @@
-site_name: Documentación de AutoSub-AI
+site_name: AutoSub-AI
+site_url: https://victorcodificando.github.io/AutoSub-AI/
+repo_url: https://github.com/VictorCodificando/AutoSub-AI
 
 theme:
   name: material
+  language: es
 
   palette:
     - media: "(prefers-color-scheme: light)"
@@ -19,38 +22,37 @@ theme:
       toggle:
         icon: material/brightness-4
         name: Cambiar a modo claro
-  
+
   font:
     text: Roboto
     code: Roboto Mono
-    
+
   features:
-    - navigation.tabs
-    - navigation.tabs.sticky
     - navigation.sections
     - navigation.indexes
-    - toc.integrate
     - content.code.copy
-    - content.code.fold
     - search.suggest
     - search.highlight
-    - content.code.tabs
 
-  markdown_extensions:
+markdown_extensions:
+  - tables
+  - toc:
+      permalink: true
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid
           class: mermaid
           format: !!python/name:pymdownx.superfences.fence_code_format
 
-  plugins:
-    - search
-  
+plugins:
+  - search:
+      lang: es
+
 nav:
   - Inicio: index.md
-  - Arquitectura y Diseño:
-    - Requisitos del Sistema: arquitectura/requisitos_sistema.md
-    - Pipeline de Procesamiento: arquitectura/pipeline_procesamiento.md
-    - Integración de Modelos: arquitectura/integracion_modelos.md
-  - Desarrollo:
-    - Roadmap y Versiones: desarrollo/roadmap.md
+  - Cómo funciona: funcionamiento/pipeline.md
+  - Decisiones técnicas: decisiones.md
+  - Recorrido: recorrido.md
+  - Calidad: calidad.md
+  - Hoja de ruta: hoja_de_ruta.md
+  - Instalación: uso/instalacion.md

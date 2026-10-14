@@ -1,1 +1,0 @@
-# Estrategia de QA

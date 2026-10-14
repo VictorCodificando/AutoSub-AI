@@ -1,1 +1,0 @@
-# Benchmarks y Rendimiento
