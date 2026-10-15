@@ -139,7 +139,7 @@ sequenceDiagram
 
 Los tiempos nunca pasan por el LLM, así que no puede desplazarlos. Si falta una línea, el subtítulo sale en el idioma original y queda marcado para el informe.
 
-El proveedor se elige en `.env` (`LLM_PROVIDER`, `LLM_MODEL`, `API_KEY`) y lo crea `TranslatorFactory`. Ahora mismo solo existe `google` (Gemini). Cada vídeo se envía completo en una sola petición; `batching.py` tiene un esbozo de lotes que todavía no se usa.
+El proveedor se elige en `.env` (`LLM_PROVIDER`, `LLM_MODEL`, `API_KEYS`) y lo crea `TranslatorFactory`. Ahora mismo solo existe `google` (Gemini). `TranslatorFactory` crea un traductor por clave y los envuelve en `RotatingTranslator`, que las usa por turnos. Si una petición falla (error de la API o de red) pasa a la siguiente clave tras una espera. Si se acumulan `MAX_CONSECUTIVE_ERRORS` fallos seguidos, todas las líneas del vídeo se quedan en el idioma original con `translation_failed` y el pipeline continúa. Los reintentos internos del SDK están desactivados para no duplicarlos. Cada vídeo se envía completo en una sola petición; `batching.py` tiene un esbozo de lotes que todavía no se usa.
 
 ### 5. Exportación e informe
 

@@ -124,7 +124,7 @@ def process_videos(
 
 
 if __name__ == "__main__":
-    videos = ["./test_data/test_05.mp4"]
+    videos = ["./test_data/01_test.mp4", "./test_data/02_test.mkv", "./test_data/03_test.mkv", "./test_data/04_test.mkv", "./test_data/05_test.mp4", "./test_data/06_test.mp4"]
     create_path(settings.temp_path)
     process_videos(videos)
     # delete_path(settings.temp_path)

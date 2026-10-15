@@ -1,11 +1,15 @@
 from abc import ABC, abstractmethod
+from itertools import cycle
 
 from pydantic import BaseModel
 import json
+import time
 
+import httpx
 from ..models import TranscriptionSegment
 from ..config import settings
 from google import genai
+from google.genai import errors, types
 
 
 class TranslatedLine(BaseModel):
@@ -27,7 +31,13 @@ class TranslatorLLM(ABC):
 
 class GoogleAITranslator(TranslatorLLM):
     def __init__(self, api_key: str, model: str):
-        self.client = genai.Client(api_key=api_key)
+        # Retries are handled by RotatingTranslator
+        self.client = genai.Client(
+            api_key=api_key,
+            http_options=types.HttpOptions(
+                retry_options=types.HttpRetryOptions(attempts=1)
+            ),
+        )
         self.model = model
 
     def translate(
@@ -66,7 +76,6 @@ class GoogleAITranslator(TranslatorLLM):
 
 
 def parse_response(response) -> dict[int, str]:
-    # parsed is None when the output does not match the schema (truncated JSON, blocked)
     batch: TranslatedBatch | None = getattr(response, "parsed", None)
     if batch is None:
         return {}
@@ -90,17 +99,60 @@ def apply_translation(
     return missing
 
 
+class RotatingTranslator(TranslatorLLM):
+    def __init__(
+        self,
+        translators: list[TranslatorLLM],
+        max_consecutive_errors: int,
+        retry_delay: float,
+    ):
+        self.translators = list(enumerate(translators, start=1))
+        self._next = cycle(self.translators)
+        self.max_consecutive_errors = max_consecutive_errors
+        self.retry_delay = retry_delay
+
+    def translate(
+        self, segments: list[TranscriptionSegment], target_language: str, context: str
+    ):
+        for attempt in range(1, self.max_consecutive_errors + 1):
+            number, translator = next(self._next)
+            try:
+                return translator.translate(segments, target_language, context)
+            except (errors.APIError, httpx.TransportError) as e:
+                print(
+                    f"Error en la traducción con la clave {number} "
+                    f"(intento {attempt}/{self.max_consecutive_errors}): {e}"
+                )
+                if attempt < self.max_consecutive_errors:
+                    time.sleep(self.retry_delay)
+
+        print(
+            f"Error: traducción fallida tras {self.max_consecutive_errors} errores "
+            f"seguidos. Se mantiene el texto original."
+        )
+        apply_translation(segments, {})
+        return None
+
+
 class TranslatorFactory:
     _pattern = {"google": GoogleAITranslator}
 
     @classmethod
     def crear(cls) -> TranslatorLLM:
         provider = settings.llm_provider
-        api_key = settings.api_key
         llm_model = settings.llm_model
         clase = cls._pattern.get(settings.llm_provider)
 
         if clase is None:
             raise ValueError(f"Provider '{provider}' not supported")
+        if not settings.api_keys:
+            raise ValueError("API_KEYS is empty")
 
-        return clase(api_key=api_key, model=llm_model)
+        translators = [
+            clase(api_key=api_key, model=llm_model) for api_key in settings.api_keys
+        ]
+        return RotatingTranslator(
+            translators,
+            max_consecutive_errors=settings.max_consecutive_errors,
+            retry_delay=settings.retry_delay,
+        )

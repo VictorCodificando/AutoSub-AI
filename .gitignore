@@ -11,6 +11,12 @@ __pycache__/
 # Modelos
 models/
 
+# Test data
+test_data/
+output/
+
 # Sistema operativo
 .DS_Store
 Thumbs.db
+# Notas privadas
+docs_private/

@@ -10,7 +10,9 @@ class Settings(BaseSettings):
     output_path: str = "output"
     llm_provider: str
     llm_model: str
-    api_key: str
+    api_keys: list[str]
+    max_consecutive_errors: int = 5
+    retry_delay: float = 5.0
     model_config = SettingsConfigDict(env_file=f"{BASE_DIR}/.env", extra="ignore")
 
 
